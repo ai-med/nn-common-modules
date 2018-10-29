@@ -1,7 +1,7 @@
 # List of APIs
 import torch
 import torch.nn as nn
-from squeeze_and_excite import squeeze_and_excite as se
+from squeeze_and_excitation import squeeze_and_excitation as se
 
 class DenseBlock(nn.Module):
     '''
