@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from squeeze_and_excitation import squeeze_and_excitation as se
 
+
 class DenseBlock(nn.Module):
     '''
     param ={
@@ -22,17 +23,16 @@ class DenseBlock(nn.Module):
     def __init__(self, params):
         super(DenseBlock, self).__init__()
         self.se_block_type = params['se_block']
-        
-        if  self.se_block_type == se.SELayer.CSE.value:
+
+        if self.se_block_type == se.SELayer.CSE.value:
             self.SELayer = se.ChannelSpatialSELayer(params['num_filters'])
-            
+
         elif self.se_block_type == se.SELayer.SSE.value:
             self.SELayer = se.SpatialSELayer(params['num_filters'])
-            
+
         elif self.se_block_type == se.SELayer.CSSE.value:
             self.SELayer = se.ChannelSpatialSELayer(params['num_filters'])
-            
-            
+
         padding_h = int((params['kernel_h'] - 1) / 2)
         padding_w = int((params['kernel_w'] - 1) / 2)
 
@@ -60,7 +60,6 @@ class DenseBlock(nn.Module):
             self.drop_out = nn.Dropout2d(params['drop_out'])
         else:
             self.drop_out_needed = False
-        
 
     def forward(self, input):
         o1 = self.batchnorm1(input)
@@ -86,11 +85,10 @@ class EncoderBlock(DenseBlock):
         out_block = super(EncoderBlock, self).forward(input)
         if self.se_block_type != se.SELayer.NONE.value:
             out_block = self.SELayer(out_block)
-            
-            
+
         if self.drop_out_needed:
             out_block = self.drop_out(out_block)
-            
+
         out_encoder, indices = self.maxpool(out_block)
         return out_encoder, out_block, indices
 
@@ -104,12 +102,12 @@ class DecoderBlock(DenseBlock):
         unpool = self.unpool(input, indices)
         concat = torch.cat((out_block, unpool), dim=1)
         out_block = super(DecoderBlock, self).forward(concat)
-        
+
         if self.se_block_type != se.SELayer.NONE.value:
             out_block = self.SELayer(out_block)
-            
+
         if self.drop_out_needed:
-            out_block = self.drop_out(out_block)            
+            out_block = self.drop_out(out_block)
         return out_block
 
 
