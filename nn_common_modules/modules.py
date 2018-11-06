@@ -6,6 +6,7 @@ from squeeze_and_excitation import squeeze_and_excitation as se
 
 class DenseBlock(nn.Module):
     '''
+    weights used for few-shot learning to tweak spatial SE block
     param ={
         'num_channels':1,
         'num_filters':64,
@@ -81,10 +82,10 @@ class EncoderBlock(DenseBlock):
         super(EncoderBlock, self).__init__(params)
         self.maxpool = nn.MaxPool2d(kernel_size=params['pool'], stride=params['stride_pool'], return_indices=True)
 
-    def forward(self, input):
+    def forward(self, input, weights=None):
         out_block = super(EncoderBlock, self).forward(input)
         if self.se_block_type != se.SELayer.NONE.value:
-            out_block = self.SELayer(out_block)
+            out_block = self.SELayer(out_block,weights)
 
         if self.drop_out_needed:
             out_block = self.drop_out(out_block)
@@ -98,13 +99,13 @@ class DecoderBlock(DenseBlock):
         super(DecoderBlock, self).__init__(params)
         self.unpool = nn.MaxUnpool2d(kernel_size=params['pool'], stride=params['stride_pool'])
 
-    def forward(self, input, out_block, indices):
+    def forward(self, input, out_block=None, indices=None, weights=None):
         unpool = self.unpool(input, indices)
         concat = torch.cat((out_block, unpool), dim=1)
         out_block = super(DecoderBlock, self).forward(concat)
 
         if self.se_block_type != se.SELayer.NONE.value:
-            out_block = self.SELayer(out_block)
+            out_block = self.SELayer(out_block, weights)
 
         if self.drop_out_needed:
             out_block = self.drop_out(out_block)
@@ -119,3 +120,31 @@ class ClassifierBlock(nn.Module):
     def forward(self, input):
         out_conv = self.conv(input)
         return out_conv
+
+
+class GenericBlock(nn.Module):
+    def __init__(self, params):
+        '''
+        :param params: {'kernel_h': 3
+                        'kernel_w': 3
+                        'num_channels':64
+                        'num_filters':64
+                        'stride_conv':1
+                        }
+        '''
+        super(GenericBlock, self).__init__(params)
+        padding_h = int((params['kernel_h'] - 1) / 2)
+        padding_w = int((params['kernel_w'] - 1) / 2)
+
+        self.conv = nn.Conv2d(in_channels=params['num_channels'], out_channels=params['num_filters'],
+                              kernel_size=(params['kernel_h'], params['kernel_w']),
+                              padding=(padding_h, padding_w),
+                              stride=params['stride_conv'])
+        self.prelu = nn.PReLU()
+        self.batchnorm = nn.BatchNorm2d(num_features=params['num_filters'])
+
+    def forward(self, input):
+        x1 = self.conv(input)
+        x2 = self.prelu(x1)
+        x3 = self.batchnorm(x2)
+        return x3
