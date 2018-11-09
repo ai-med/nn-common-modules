@@ -84,8 +84,8 @@ class EncoderBlock(DenseBlock):
 
     def forward(self, input, weights=None):
         out_block = super(EncoderBlock, self).forward(input)
-        if self.se_block_type != se.SELayer.NONE.value:
-            out_block = self.SELayer(out_block,weights)
+        # if self.se_block_type != se.SELayer.NONE.value:
+        #     out_block = self.SELayer(out_block,weights)
 
         if self.drop_out_needed:
             out_block = self.drop_out(out_block)
@@ -125,14 +125,14 @@ class ClassifierBlock(nn.Module):
 class GenericBlock(nn.Module):
     def __init__(self, params):
         '''
-        :param params: {'kernel_h': 3
-                        'kernel_w': 3
+        :param params: {'kernel_h': 5
+                        'kernel_w': 5
                         'num_channels':64
                         'num_filters':64
                         'stride_conv':1
                         }
         '''
-        super(GenericBlock, self).__init__(params)
+        super(GenericBlock, self).__init__()
         padding_h = int((params['kernel_h'] - 1) / 2)
         padding_w = int((params['kernel_w'] - 1) / 2)
 
