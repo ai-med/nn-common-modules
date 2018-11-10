@@ -21,18 +21,19 @@ class DenseBlock(nn.Module):
     }
     '''
 
-    def __init__(self, params):
+    def __init__(self, params, se_block_type=None):
         super(DenseBlock, self).__init__()
-        self.se_block_type = params['se_block']
 
-        if self.se_block_type == se.SELayer.CSE.value:
+        if se_block_type == se.SELayer.CSE.value:
             self.SELayer = se.ChannelSpatialSELayer(params['num_filters'])
 
-        elif self.se_block_type == se.SELayer.SSE.value:
+        elif se_block_type == se.SELayer.SSE.value:
             self.SELayer = se.SpatialSELayer(params['num_filters'])
 
-        elif self.se_block_type == se.SELayer.CSSE.value:
+        elif se_block_type == se.SELayer.CSSE.value:
             self.SELayer = se.ChannelSpatialSELayer(params['num_filters'])
+        else:
+            self.SELayer = None
 
         padding_h = int((params['kernel_h'] - 1) / 2)
         padding_w = int((params['kernel_w'] - 1) / 2)
@@ -78,14 +79,14 @@ class DenseBlock(nn.Module):
 
 
 class EncoderBlock(DenseBlock):
-    def __init__(self, params):
-        super(EncoderBlock, self).__init__(params)
+    def __init__(self, params, se_block_type=None):
+        super(EncoderBlock, self).__init__(params, se_block_type=se_block_type)
         self.maxpool = nn.MaxPool2d(kernel_size=params['pool'], stride=params['stride_pool'], return_indices=True)
 
     def forward(self, input, weights=None):
         out_block = super(EncoderBlock, self).forward(input)
-        # if self.se_block_type != se.SELayer.NONE.value:
-        #     out_block = self.SELayer(out_block,weights)
+        if self.SELayer:
+            out_block = self.SELayer(out_block, weights)
 
         if self.drop_out_needed:
             out_block = self.drop_out(out_block)
@@ -95,8 +96,8 @@ class EncoderBlock(DenseBlock):
 
 
 class DecoderBlock(DenseBlock):
-    def __init__(self, params):
-        super(DecoderBlock, self).__init__(params)
+    def __init__(self, params, se_block_type=None):
+        super(DecoderBlock, self).__init__(params, se_block_type=se_block_type)
         self.unpool = nn.MaxUnpool2d(kernel_size=params['pool'], stride=params['stride_pool'])
 
     def forward(self, input, out_block=None, indices=None, weights=None):
@@ -104,7 +105,7 @@ class DecoderBlock(DenseBlock):
         concat = torch.cat((out_block, unpool), dim=1)
         out_block = super(DecoderBlock, self).forward(concat)
 
-        if self.se_block_type != se.SELayer.NONE.value:
+        if self.SELayer:
             out_block = self.SELayer(out_block, weights)
 
         if self.drop_out_needed:
