@@ -1,4 +1,6 @@
-# List of APIs
+"""
+Building blocks of segmentation neural network
+"""
 import torch
 import torch.nn as nn
 from squeeze_and_excitation import squeeze_and_excitation as se
