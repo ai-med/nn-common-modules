@@ -4,6 +4,7 @@ Building blocks of segmentation neural network
 import torch
 import torch.nn as nn
 from squeeze_and_excitation import squeeze_and_excitation as se
+import torch.nn.functional as F
 
 
 class DenseBlock(nn.Module):
@@ -120,8 +121,14 @@ class ClassifierBlock(nn.Module):
         super(ClassifierBlock, self).__init__()
         self.conv = nn.Conv2d(params['num_channels'], params['num_class'], params['kernel_c'], params['stride_conv'])
 
-    def forward(self, input):
-        out_conv = self.conv(input)
+    def forward(self, input, weights=None):
+        batch_size, channel, a, b = input.size()
+        if weights is not None:
+            weights, _ = torch.max(weights, dim=0)
+            weights = weights.view(1, channel, 1, 1)
+            out_conv = F.conv2d(input, weights)
+        else:
+            out_conv = self.conv(input)
         return out_conv
 
 
@@ -138,7 +145,7 @@ class GenericBlock(nn.Module):
         super(GenericBlock, self).__init__()
         padding_h = int((params['kernel_h'] - 1) / 2)
         padding_w = int((params['kernel_w'] - 1) / 2)
-
+        self.out_channel = params['num_filters']
         self.conv = nn.Conv2d(in_channels=params['num_channels'], out_channels=params['num_filters'],
                               kernel_size=(params['kernel_h'], params['kernel_w']),
                               padding=(padding_h, padding_w),
@@ -146,8 +153,37 @@ class GenericBlock(nn.Module):
         self.prelu = nn.PReLU()
         self.batchnorm = nn.BatchNorm2d(num_features=params['num_filters'])
 
-    def forward(self, input):
-        x1 = self.conv(input)
+    def forward(self, input, weights=None):
+        _, c, h, w = input.shape
+        if weights is None:
+            x1 = self.conv(input)
+        else:
+            weights, _ = torch.max(weights, dim=0)
+            weights = weights.view(self.out_channel, c, 1, 1)
+            x1 = F.conv2d(input, weights)
         x2 = self.prelu(x1)
         x3 = self.batchnorm(x2)
         return x3
+
+
+class SDnetEncoderBlock(GenericBlock):
+    def __init__(self, params):
+        super(SDnetEncoderBlock, self).__init__(params)
+        self.maxpool = nn.MaxPool2d(kernel_size=params['pool'], stride=params['stride_pool'], return_indices=True)
+
+    def forward(self, input, weights=None):
+        out_block = super(SDnetEncoderBlock, self).forward(input, weights)
+        out_encoder, indices = self.maxpool(out_block)
+        return out_encoder, out_block, indices
+
+
+class SDnetDecoderBlock(GenericBlock):
+    def __init__(self, params):
+        super(SDnetDecoderBlock, self).__init__(params)
+        self.unpool = nn.MaxUnpool2d(kernel_size=params['pool'], stride=params['stride_pool'])
+
+    def forward(self, input, out_block=None, indices=None, weights=None):
+        unpool = self.unpool(input, indices)
+        concat = torch.cat((out_block, unpool), dim=1)
+        out_block = super(SDnetDecoderBlock, self).forward(concat, weights)
+        return out_block
