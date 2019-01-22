@@ -133,7 +133,7 @@ class ClassifierBlock(nn.Module):
 
 
 class GenericBlock(nn.Module):
-    def __init__(self, params):
+    def __init__(self, params, se_block_type=None):
         '''
         :param params: {'kernel_h': 5
                         'kernel_w': 5
@@ -143,6 +143,16 @@ class GenericBlock(nn.Module):
                         }
         '''
         super(GenericBlock, self).__init__()
+        if se_block_type == se.SELayer.CSE.value:
+            self.SELayer = se.ChannelSpatialSELayer(params['num_filters'])
+
+        elif se_block_type == se.SELayer.SSE.value:
+            self.SELayer = se.SpatialSELayer(params['num_filters'])
+
+        elif se_block_type == se.SELayer.CSSE.value:
+            self.SELayer = se.ChannelSpatialSELayer(params['num_filters'])
+        else:
+            self.SELayer = None
         padding_h = int((params['kernel_h'] - 1) / 2)
         padding_w = int((params['kernel_w'] - 1) / 2)
         self.out_channel = params['num_filters']
@@ -152,6 +162,11 @@ class GenericBlock(nn.Module):
                               stride=params['stride_conv'])
         self.prelu = nn.PReLU()
         self.batchnorm = nn.BatchNorm2d(num_features=params['num_filters'])
+        if params['drop_out'] > 0:
+            self.drop_out_needed = True
+            self.drop_out = nn.Dropout2d(params['drop_out'])
+        else:
+            self.drop_out_needed = False
 
     def forward(self, input, weights=None):
         _, c, h, w = input.shape
@@ -167,23 +182,39 @@ class GenericBlock(nn.Module):
 
 
 class SDnetEncoderBlock(GenericBlock):
-    def __init__(self, params):
-        super(SDnetEncoderBlock, self).__init__(params)
+    def __init__(self, params, se_block_type=None):
+        super(SDnetEncoderBlock, self).__init__(params, se_block_type)
         self.maxpool = nn.MaxPool2d(kernel_size=params['pool'], stride=params['stride_pool'], return_indices=True)
 
     def forward(self, input, weights=None):
         out_block = super(SDnetEncoderBlock, self).forward(input, weights)
+        if self.SELayer:
+            out_block = self.SELayer(out_block, weights)
+        # else:
+        #     out_block = out_block
+
+        if self.drop_out_needed:
+            out_block = self.drop_out(out_block)
+
         out_encoder, indices = self.maxpool(out_block)
         return out_encoder, out_block, indices
 
 
 class SDnetDecoderBlock(GenericBlock):
-    def __init__(self, params):
-        super(SDnetDecoderBlock, self).__init__(params)
+    def __init__(self, params, se_block_type=None):
+        super(SDnetDecoderBlock, self).__init__(params, se_block_type)
         self.unpool = nn.MaxUnpool2d(kernel_size=params['pool'], stride=params['stride_pool'])
 
     def forward(self, input, out_block=None, indices=None, weights=None):
         unpool = self.unpool(input, indices)
-        concat = torch.cat((out_block, unpool), dim=1)
+        if out_block is not None:
+            concat = torch.cat((out_block, unpool), dim=1)
+        else:
+            concat = unpool
         out_block = super(SDnetDecoderBlock, self).forward(concat, weights)
+        if self.SELayer:
+            out_block = self.SELayer(out_block, weights)
+
+        if self.drop_out_needed:
+            out_block = self.drop_out(out_block)
         return out_block
