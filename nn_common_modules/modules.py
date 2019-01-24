@@ -28,7 +28,7 @@ class DenseBlock(nn.Module):
         super(DenseBlock, self).__init__()
 
         if se_block_type == se.SELayer.CSE.value:
-            self.SELayer = se.ChannelSpatialSELayer(params['num_filters'])
+            self.SELayer = se.ChannelSELayer(params['num_filters'])
 
         elif se_block_type == se.SELayer.SSE.value:
             self.SELayer = se.SpatialSELayer(params['num_filters'])
