@@ -1,4 +1,4 @@
-# NN Additional Losses
+# NN Common Modules
 
 Common modules, blocks and losses which can be reused in a deep neural netwok specifically for segmentation Please use [technical documentation](https://shayansiddiqui.github.io/nn-additional-losses/build/html/) for a reference to API manual
 
