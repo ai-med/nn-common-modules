@@ -30,16 +30,288 @@
             
   <div class="section" id="welcome-to-nn-common-modules-s-documentation">
 <h1>Welcome to nn-common-modules’s documentation!<a class="headerlink" href="#welcome-to-nn-common-modules-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Common modules, blocks and losses which can be reused in a deep neural netwok specifically for segmentation Please use [technical documentation](<a class="reference external" href="https://shayansiddiqui.github.io/nn-common-modules/_build/html/">https://shayansiddiqui.github.io/nn-common-modules/_build/html/</a>) for a reference to API manual</p>
+</div>
 <div class="toctree-wrapper compound">
 </div>
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+<div class="section" id="module-losses">
+<span id="losses"></span><h1>Losses<a class="headerlink" href="#module-losses" title="Permalink to this headline">¶</a></h1>
+<p>Addition losses module defines classses which are commonly used particularly in segmentation and are not part of standard pytorch library.</p>
+<dl class="class">
+<dt id="losses.CombinedLoss">
+<em class="property">class </em><code class="descclassname">losses.</code><code class="descname">CombinedLoss</code><a class="headerlink" href="#losses.CombinedLoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>A combination of dice  and cross entropy loss</p>
+<dl class="method">
+<dt id="losses.CombinedLoss.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>target</em>, <em>weight=None</em><span class="sig-paren">)</span><a class="headerlink" href="#losses.CombinedLoss.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input</strong> – torch.tensor (NxCxHxW)</li>
+<li><strong>target</strong> – torch.tensor (NxHxW)</li>
+<li><strong>weight</strong> – torch.tensor (NxHxW)</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">scalar</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="losses.CrossEntropyLoss2d">
+<em class="property">class </em><code class="descclassname">losses.</code><code class="descname">CrossEntropyLoss2d</code><span class="sig-paren">(</span><em>weight=None</em><span class="sig-paren">)</span><a class="headerlink" href="#losses.CrossEntropyLoss2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard pytorch weighted nn.CrossEntropyLoss</p>
+<dl class="method">
+<dt id="losses.CrossEntropyLoss2d.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>inputs</em>, <em>targets</em><span class="sig-paren">)</span><a class="headerlink" href="#losses.CrossEntropyLoss2d.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>inputs</strong> – torch.tensor (NxC)</li>
+<li><strong>targets</strong> – torch.tensor (N)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">scalar</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="losses.DiceLoss">
+<em class="property">class </em><code class="descclassname">losses.</code><code class="descname">DiceLoss</code><span class="sig-paren">(</span><em>weight=None</em>, <em>size_average=None</em>, <em>reduce=None</em>, <em>reduction='mean'</em><span class="sig-paren">)</span><a class="headerlink" href="#losses.DiceLoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dice Loss for a batch of samples</p>
+<dl class="method">
+<dt id="losses.DiceLoss.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>output</em>, <em>target</em>, <em>weights=None</em>, <em>ignore_index=None</em>, <em>binary=False</em><span class="sig-paren">)</span><a class="headerlink" href="#losses.DiceLoss.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>output</strong> – NxCxHxW logits</li>
+<li><strong>target</strong> – NxHxW LongTensor</li>
+<li><strong>weights</strong> – C FloatTensor</li>
+<li><strong>ignore_index</strong> – int index to ignore from loss</li>
+<li><strong>binary</strong> – bool for binarized one chaneel(C=1) input</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="losses.FocalLoss">
+<em class="property">class </em><code class="descclassname">losses.</code><code class="descname">FocalLoss</code><span class="sig-paren">(</span><em>gamma=2</em>, <em>alpha=None</em>, <em>size_average=True</em><span class="sig-paren">)</span><a class="headerlink" href="#losses.FocalLoss" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="losses.FocalLoss.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#losses.FocalLoss.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="losses.IoULoss">
+<em class="property">class </em><code class="descclassname">losses.</code><code class="descname">IoULoss</code><span class="sig-paren">(</span><em>weight=None</em>, <em>size_average=None</em>, <em>reduce=None</em>, <em>reduction='mean'</em><span class="sig-paren">)</span><a class="headerlink" href="#losses.IoULoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>IoU Loss for a batch of samples</p>
+<dl class="method">
+<dt id="losses.IoULoss.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>output</em>, <em>target</em>, <em>weights=None</em>, <em>ignore_index=None</em><span class="sig-paren">)</span><a class="headerlink" href="#losses.IoULoss.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forward pass
+:param output: NxCxHxW Variable
+:param target: NxHxW LongTensor
+:param weights: C FloatTensor
+:param ignore_index: int index to ignore from loss
+:return:</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-modules">
+<span id="modules"></span><h1>Modules<a class="headerlink" href="#module-modules" title="Permalink to this headline">¶</a></h1>
+<p>Building blocks of segmentation neural network</p>
+<dl class="class">
+<dt id="modules.ClassifierBlock">
+<em class="property">class </em><code class="descclassname">modules.</code><code class="descname">ClassifierBlock</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.ClassifierBlock" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="modules.ClassifierBlock.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.ClassifierBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="modules.DecoderBlock">
+<em class="property">class </em><code class="descclassname">modules.</code><code class="descname">DecoderBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.DecoderBlock" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="modules.DecoderBlock.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>out_block=None</em>, <em>indices=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.DecoderBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="modules.DenseBlock">
+<em class="property">class </em><code class="descclassname">modules.</code><code class="descname">DenseBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.DenseBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>weights used for few-shot learning to tweak spatial SE block
+param ={</p>
+<blockquote>
+<div>‘num_channels’:1,
+‘num_filters’:64,
+‘kernel_h’:5,
+‘kernel_w’:5,
+‘stride_conv’:1,
+‘pool’:2,
+‘stride_pool’:2,
+‘num_classes’:28,
+‘se_block’: se.SELayer.None,
+‘drop_out’:0,2</div></blockquote>
+<p>}</p>
+<dl class="method">
+<dt id="modules.DenseBlock.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.DenseBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="modules.EncoderBlock">
+<em class="property">class </em><code class="descclassname">modules.</code><code class="descname">EncoderBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.EncoderBlock" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="modules.EncoderBlock.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.EncoderBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="modules.GenericBlock">
+<em class="property">class </em><code class="descclassname">modules.</code><code class="descname">GenericBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.GenericBlock" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="modules.GenericBlock.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.GenericBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="modules.SDnetDecoderBlock">
+<em class="property">class </em><code class="descclassname">modules.</code><code class="descname">SDnetDecoderBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.SDnetDecoderBlock" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="modules.SDnetDecoderBlock.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>out_block=None</em>, <em>indices=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.SDnetDecoderBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="modules.SDnetEncoderBlock">
+<em class="property">class </em><code class="descclassname">modules.</code><code class="descname">SDnetEncoderBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.SDnetEncoderBlock" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="modules.SDnetEncoderBlock.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.SDnetEncoderBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
