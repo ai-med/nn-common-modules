@@ -420,13 +420,25 @@
 <dl class="method">
 <dt id="modules.EncoderBlock.forward">
 <code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.EncoderBlock.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Forward pass   
-:param input: Input tensor, shape = (N x C x H x W)
-:type input: torch.tensor [FloatTensor]
-:param weights: Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None
-:type weights: torch.tensor, optional
-:return: output tensor with maxpool, output tensor without maxpool, indices for unpooling
-:rtype: torch.tensor [FloatTensor], torch.tensor [FloatTensor], torch.tensor [LongTensor]</p>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em>) – Input tensor, shape = (N x C x H x W)</li>
+<li><strong>weights</strong> (<em>torch.tensor</em><em>, </em><em>optional</em>) – Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">output tensor with maxpool, output tensor without maxpool, indices for unpooling</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor [FloatTensor], torch.tensor [FloatTensor], torch.tensor [LongTensor]</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>

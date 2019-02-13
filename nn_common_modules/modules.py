@@ -136,6 +136,7 @@ class EncoderBlock(DenseBlock):
 
     def forward(self, input, weights=None):
         """Forward pass   
+        
         :param input: Input tensor, shape = (N x C x H x W)
         :type input: torch.tensor [FloatTensor]
         :param weights: Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None
@@ -349,7 +350,7 @@ class SDnetEncoderBlock(GenericBlock):
 
     def forward(self, input, weights=None):
         """Forward pass   
-        
+
         :param input: Input tensor, shape = (N x C x H x W)
         :type input: torch.tensor [FloatTensor]
         :param weights: Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None
