@@ -1,5 +1,6 @@
 """
 Addition losses module defines classses which are commonly used particularly in segmentation and are not part of standard pytorch library.
+Usage : from nn_common_modules import losses as additional_losses
 """
 import torch
 import torch.nn as nn
@@ -23,7 +24,7 @@ class DiceLoss(_WeightedLoss):
         :param weights: C FloatTensor
         :param ignore_index: int index to ignore from loss
         :param binary: bool for binarized one chaneel(C=1) input
-        :return:
+        :return: torch.tensor
         """
         output = F.softmax(output, dim=1)
         if binary:
@@ -186,6 +187,10 @@ class CombinedLoss(_Loss):
 
 # Credit to https://github.com/clcarwin/focal_loss_pytorch
 class FocalLoss(nn.Module):
+    """
+    Focal Loss for Dense Object Detection
+    """
+
     def __init__(self, gamma=2, alpha=None, size_average=True):
 
         super(FocalLoss, self).__init__()
@@ -198,6 +203,16 @@ class FocalLoss(nn.Module):
         self.size_average = size_average
 
     def forward(self, input, target):
+        """[summary]
+        
+        Arguments:
+            input {[torch.tensor]} -- [shape=NxCxHxW]
+            target {[torch.tensor]} -- [shape=NxHxW]
+        
+        Returns:
+            [torch.tensor] -- [loss value]
+        """
+
         if input.dim() > 2:
             # N,C,H,W => N,C,H*W
             input = input.view(input.size(0), input.size(1), -1)
