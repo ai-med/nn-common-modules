@@ -206,11 +206,11 @@ class FocalLoss(nn.Module):
         """[summary]
         
         Arguments:
-            input {[torch.tensor]} -- [shape=NxCxHxW]
-            target {[torch.tensor]} -- [shape=NxHxW]
+            input {torch.tensor} -- shape=NxCxHxW
+            target {[torch.tensor]} -- shape=NxHxW
         
         Returns:
-            [torch.tensor] -- [loss value]
+            torch.tensor -- loss value
         """
 
         if input.dim() > 2:
