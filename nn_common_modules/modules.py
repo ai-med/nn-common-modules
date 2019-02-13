@@ -1,5 +1,17 @@
 """
+Description
+++++++++++++++++++++++
 Building blocks of segmentation neural network
+
+Usage
+++++++++++++++++++++++
+Import the package and Instantiate any module/block class you want to you::
+
+    from nn_common_modules import modules as additional_modules
+    loss = additional_modules.DenseBlock(params, se_block_type = 'SSE')
+
+Members
+++++++++++++++++++++++
 """
 import torch
 import torch.nn as nn
@@ -8,9 +20,9 @@ import torch.nn.functional as F
 
 
 class DenseBlock(nn.Module):
-    '''
-    weights used for few-shot learning to tweak spatial SE block
-    param ={
+    """Block with dense connections
+
+    :param params: {
         'num_channels':1,
         'num_filters':64,
         'kernel_h':5,
@@ -20,9 +32,13 @@ class DenseBlock(nn.Module):
         'stride_pool':2,
         'num_classes':28,
         'se_block': se.SELayer.None,
-        'drop_out':0,2
-    }
-    '''
+        'drop_out':0,2}
+    :type params: dict
+    :param se_block_type: Squeeze and Excite block type to be included, defaults to None
+    :type se_block_type: str, valid options are {'NONE', 'CSE', 'SSE', 'CSSE'}, optional
+    :return: forward passed tensor
+    :rtype: torch.tonsor [FloatTensor]
+    """
 
     def __init__(self, params, se_block_type=None):
         super(DenseBlock, self).__init__()
@@ -42,14 +58,17 @@ class DenseBlock(nn.Module):
         padding_w = int((params['kernel_w'] - 1) / 2)
 
         conv1_out_size = int(params['num_channels'] + params['num_filters'])
-        conv2_out_size = int(params['num_channels'] + params['num_filters'] + params['num_filters'])
+        conv2_out_size = int(
+            params['num_channels'] + params['num_filters'] + params['num_filters'])
 
         self.conv1 = nn.Conv2d(in_channels=params['num_channels'], out_channels=params['num_filters'],
-                               kernel_size=(params['kernel_h'], params['kernel_w']),
+                               kernel_size=(
+                                   params['kernel_h'], params['kernel_w']),
                                padding=(padding_h, padding_w),
                                stride=params['stride_conv'])
         self.conv2 = nn.Conv2d(in_channels=conv1_out_size, out_channels=params['num_filters'],
-                               kernel_size=(params['kernel_h'], params['kernel_w']),
+                               kernel_size=(
+                                   params['kernel_h'], params['kernel_w']),
                                padding=(padding_h, padding_w),
                                stride=params['stride_conv'])
         self.conv3 = nn.Conv2d(in_channels=conv2_out_size, out_channels=params['num_filters'],
@@ -67,6 +86,14 @@ class DenseBlock(nn.Module):
             self.drop_out_needed = False
 
     def forward(self, input):
+        """Forward pass
+
+        :param input: Input tensor, shape = (N x C x H x W)
+        :type input: torch.tensor [FloatTensor]
+        :return: Forward passed tensor
+        :rtype: torch.tensor [FloatTensor]
+        """
+
         o1 = self.batchnorm1(input)
         o2 = self.prelu(o1)
         o3 = self.conv1(o2)
@@ -82,11 +109,41 @@ class DenseBlock(nn.Module):
 
 
 class EncoderBlock(DenseBlock):
+    """Dense encoder block with maxpool and an optional SE block
+
+    :param params: {
+        'num_channels':1,
+        'num_filters':64,
+        'kernel_h':5,
+        'kernel_w':5,
+        'stride_conv':1,
+        'pool':2,
+        'stride_pool':2,
+        'num_classes':28,
+        'se_block': se.SELayer.None,
+        'drop_out':0,2}
+    :type params: dict
+    :param se_block_type: Squeeze and Excite block type to be included, defaults to None
+    :type se_block_type: str, valid options are {'NONE', 'CSE', 'SSE', 'CSSE'}, optional
+    :return: output tensor with maxpool, output tensor without maxpool, indices for unpooling
+    :rtype: torch.tensor [FloatTensor], torch.tensor [FloatTensor], torch.tensor [LongTensor] 
+    """
+
     def __init__(self, params, se_block_type=None):
         super(EncoderBlock, self).__init__(params, se_block_type=se_block_type)
-        self.maxpool = nn.MaxPool2d(kernel_size=params['pool'], stride=params['stride_pool'], return_indices=True)
+        self.maxpool = nn.MaxPool2d(
+            kernel_size=params['pool'], stride=params['stride_pool'], return_indices=True)
 
     def forward(self, input, weights=None):
+        """Forward pass   
+        :param input: Input tensor, shape = (N x C x H x W)
+        :type input: torch.tensor [FloatTensor]
+        :param weights: Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None
+        :type weights: torch.tensor, optional
+        :return: output tensor with maxpool, output tensor without maxpool, indices for unpooling
+        :rtype: torch.tensor [FloatTensor], torch.tensor [FloatTensor], torch.tensor [LongTensor] 
+        """
+
         out_block = super(EncoderBlock, self).forward(input)
         if self.SELayer:
             out_block = self.SELayer(out_block, weights)
@@ -99,11 +156,46 @@ class EncoderBlock(DenseBlock):
 
 
 class DecoderBlock(DenseBlock):
+    """Dense decoder block with maxunpool and an optional skip connections and SE block
+
+    :param params: {
+        'num_channels':1,
+        'num_filters':64,
+        'kernel_h':5,
+        'kernel_w':5,
+        'stride_conv':1,
+        'pool':2,
+        'stride_pool':2,
+        'num_classes':28,
+        'se_block': se.SELayer.None,
+        'drop_out':0,2}
+    :type params: dict
+    :param se_block_type: Squeeze and Excite block type to be included, defaults to None
+    :type se_block_type: str, valid options are {'NONE', 'CSE', 'SSE', 'CSSE'}, optional
+    :return: forward passed tensor
+    :rtype: torch.tensor [FloatTensor]
+    """
+
     def __init__(self, params, se_block_type=None):
         super(DecoderBlock, self).__init__(params, se_block_type=se_block_type)
-        self.unpool = nn.MaxUnpool2d(kernel_size=params['pool'], stride=params['stride_pool'])
+        self.unpool = nn.MaxUnpool2d(
+            kernel_size=params['pool'], stride=params['stride_pool'])
 
     def forward(self, input, out_block=None, indices=None, weights=None):
+        """Forward pass
+
+        :param input: Input tensor, shape = (N x C x H x W)
+        :type input: torch.tensor [FloatTensor]
+        :param out_block: Tensor for skip connection, shape = (N x C x H x W), defaults to None
+        :type out_block: torch.tensor [FloatTensor], optional
+        :param indices: Indices used for unpooling operation, defaults to None
+        :type indices: torch.tensor, optional
+        :param weights: Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None
+        :type weights: torch.tensor, optional
+        :return: Forward passed tensor
+        :rtype: torch.tensor [FloatTensor]
+        """
+
         unpool = self.unpool(input, indices)
         concat = torch.cat((out_block, unpool), dim=1)
         out_block = super(DecoderBlock, self).forward(concat)
@@ -117,11 +209,39 @@ class DecoderBlock(DenseBlock):
 
 
 class ClassifierBlock(nn.Module):
+    """
+    Last layer
+
+    :param params: {
+        'num_channels':1,
+        'num_filters':64,
+        'kernel_c':5,
+        'stride_conv':1,
+        'pool':2,
+        'stride_pool':2,
+        'num_classes':28,
+        'se_block': se.SELayer.None,
+        'drop_out':0,2}
+    :type params: dict
+    :return: forward passed tensor
+    :rtype: torch.tensor [FloatTensor]
+    """
+
     def __init__(self, params):
         super(ClassifierBlock, self).__init__()
-        self.conv = nn.Conv2d(params['num_channels'], params['num_class'], params['kernel_c'], params['stride_conv'])
+        self.conv = nn.Conv2d(
+            params['num_channels'], params['num_class'], params['kernel_c'], params['stride_conv'])
 
     def forward(self, input, weights=None):
+        """Forward pass
+
+        :param input: Input tensor, shape = (N x C x H x W)
+        :type input: torch.tensor [FloatTensor]
+        :param weights: Weights for classifier regression, defaults to None
+        :type weights: torch.tensor (N), optional
+        :return: logits
+        :rtype: torch.tensor
+        """
         batch_size, channel, a, b = input.size()
         if weights is not None:
             weights, _ = torch.max(weights, dim=0)
@@ -133,15 +253,23 @@ class ClassifierBlock(nn.Module):
 
 
 class GenericBlock(nn.Module):
-    def __init__(self, params, se_block_type=None):
-        '''
-        :param params: {'kernel_h': 5
+    """
+    Generic parent class for a conv encoder/decoder block.
+
+    :param params: {'kernel_h': 5
                         'kernel_w': 5
                         'num_channels':64
                         'num_filters':64
                         'stride_conv':1
                         }
-        '''
+    :type params: dict
+    :param se_block_type: Squeeze and Excite block type to be included, defaults to None
+    :type se_block_type: str, valid options are {'NONE', 'CSE', 'SSE', 'CSSE'}, optional    
+    :return: forward passed tensor
+    :rtype: torch.tensor [FloatTensor]
+    """
+
+    def __init__(self, params, se_block_type=None):
         super(GenericBlock, self).__init__()
         if se_block_type == se.SELayer.CSE.value:
             self.SELayer = se.ChannelSpatialSELayer(params['num_filters'])
@@ -157,7 +285,8 @@ class GenericBlock(nn.Module):
         padding_w = int((params['kernel_w'] - 1) / 2)
         self.out_channel = params['num_filters']
         self.conv = nn.Conv2d(in_channels=params['num_channels'], out_channels=params['num_filters'],
-                              kernel_size=(params['kernel_h'], params['kernel_w']),
+                              kernel_size=(
+                                  params['kernel_h'], params['kernel_w']),
                               padding=(padding_h, padding_w),
                               stride=params['stride_conv'])
         self.prelu = nn.PReLU()
@@ -169,6 +298,16 @@ class GenericBlock(nn.Module):
             self.drop_out_needed = False
 
     def forward(self, input, weights=None):
+        """Forward pass
+
+        :param input: Input tensor, shape = (N x C x H x W)
+        :type input: torch.tensor [FloatTensor]
+        :param weights: Custom weights for convolution, defaults to None
+        :type weights: torch.tensor [FloatTensor], optional
+        :return: [description]
+        :rtype: [type]
+        """
+
         _, c, h, w = input.shape
         if weights is None:
             x1 = self.conv(input)
@@ -182,17 +321,47 @@ class GenericBlock(nn.Module):
 
 
 class SDnetEncoderBlock(GenericBlock):
+    """
+    A standard conv -> prelu -> batchnorm-> maxpool block without dense connections
+
+    :param params: {
+        'num_channels':1,
+        'num_filters':64,
+        'kernel_h':5,
+        'kernel_w':5,
+        'stride_conv':1,
+        'pool':2,
+        'stride_pool':2,
+        'num_classes':28,
+        'se_block': se.SELayer.None,
+        'drop_out':0,2}
+    :type params: dict
+    :param se_block_type: Squeeze and Excite block type to be included, defaults to None
+    :type se_block_type: str, valid options are {'NONE', 'CSE', 'SSE', 'CSSE'}, optional
+    :return: output tensor with maxpool, output tensor without maxpool, indices for unpooling
+    :rtype: torch.tensor [FloatTensor], torch.tensor [FloatTensor], torch.tensor [LongTensor] 
+    """
+
     def __init__(self, params, se_block_type=None):
         super(SDnetEncoderBlock, self).__init__(params, se_block_type)
-        self.maxpool = nn.MaxPool2d(kernel_size=params['pool'], stride=params['stride_pool'], return_indices=True)
+        self.maxpool = nn.MaxPool2d(
+            kernel_size=params['pool'], stride=params['stride_pool'], return_indices=True)
 
     def forward(self, input, weights=None):
+        """Forward pass   
+        
+        :param input: Input tensor, shape = (N x C x H x W)
+        :type input: torch.tensor [FloatTensor]
+        :param weights: Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None
+        :type weights: torch.tensor, optional
+        :return: output tensor with maxpool, output tensor without maxpool, indices for unpooling
+        :rtype: torch.tensor [FloatTensor], torch.tensor [FloatTensor], torch.tensor [LongTensor]  
+        """
+
         out_block = super(SDnetEncoderBlock, self).forward(input, weights)
+
         if self.SELayer:
             out_block = self.SELayer(out_block, weights)
-        # else:
-        #     out_block = out_block
-
         if self.drop_out_needed:
             out_block = self.drop_out(out_block)
 
@@ -201,11 +370,46 @@ class SDnetEncoderBlock(GenericBlock):
 
 
 class SDnetDecoderBlock(GenericBlock):
+    """Standard decoder block with maxunpool -> skipconnections -> conv -> prelu -> batchnorm, without dense connections and an optional SE blocks
+
+    :param params: {
+        'num_channels':1,
+        'num_filters':64,
+        'kernel_h':5,
+        'kernel_w':5,
+        'stride_conv':1,
+        'pool':2,
+        'stride_pool':2,
+        'num_classes':28,
+        'se_block': se.SELayer.None,
+        'drop_out':0,2}
+    :type params: dict
+    :param se_block_type: Squeeze and Excite block type to be included, defaults to None
+    :type se_block_type: str, valid options are {'NONE', 'CSE', 'SSE', 'CSSE'}, optional
+    :return: forward passed tensor
+    :rtype: torch.tensor [FloatTensor]
+    """
+
     def __init__(self, params, se_block_type=None):
         super(SDnetDecoderBlock, self).__init__(params, se_block_type)
-        self.unpool = nn.MaxUnpool2d(kernel_size=params['pool'], stride=params['stride_pool'])
+        self.unpool = nn.MaxUnpool2d(
+            kernel_size=params['pool'], stride=params['stride_pool'])
 
     def forward(self, input, out_block=None, indices=None, weights=None):
+        """Forward pass
+
+        :param input: Input tensor, shape = (N x C x H x W)
+        :type input: torch.tensor [FloatTensor]
+        :param out_block: Tensor for skip connection, shape = (N x C x H x W), defaults to None
+        :type out_block: torch.tensor [FloatTensor], optional
+        :param indices: Indices used for unpooling operation, defaults to None
+        :type indices: torch.tensor, optional
+        :param weights: Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None
+        :type weights: torch.tensor, optional
+        :return: Forward pass
+        :rtype: torch.tensor
+        """
+
         unpool = self.unpool(input, indices)
         if out_block is not None:
             concat = torch.cat((out_block, unpool), dim=1)

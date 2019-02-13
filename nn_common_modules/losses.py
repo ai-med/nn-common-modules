@@ -1,6 +1,17 @@
 """
+Description
+++++++++++++++++++++++
 Addition losses module defines classses which are commonly used particularly in segmentation and are not part of standard pytorch library.
-Usage : from nn_common_modules import losses as additional_losses
+
+Usage
+++++++++++++++++++++++
+Import the package and Instantiate any loss class you want to you::
+
+    from nn_common_modules import losses as additional_losses
+    loss = additional_losses.DiceLoss()
+
+Members
+++++++++++++++++++++++
 """
 import torch
 import torch.nn as nn
@@ -96,14 +107,20 @@ class IoULoss(_WeightedLoss):
     """
 
     def forward(self, output, target, weights=None, ignore_index=None):
+        """Forward pass
+        
+        :param output: shape = NxCxHxW
+        :type output: torch.tensor [FloatTensor]
+        :param target: shape = NxHxW
+        :type target: torch.tensor [LongTensor]
+        :param weights: shape = C, defaults to None
+        :type weights: torch.tensor [FloatTensor], optional
+        :param ignore_index: index to ignore from loss, defaults to None
+        :type ignore_index: int, optional
+        :return: loss value
+        :rtype: torch.tensor
         """
-        Forward pass
-        :param output: NxCxHxW Variable
-        :param target: NxHxW LongTensor
-        :param weights: C FloatTensor
-        :param ignore_index: int index to ignore from loss
-        :return:
-        """
+
         output = F.softmax(output, dim=1)
 
         eps = 0.0001
@@ -203,14 +220,14 @@ class FocalLoss(nn.Module):
         self.size_average = size_average
 
     def forward(self, input, target):
-        """[summary]
-        
-        Arguments:
-            input {torch.tensor} -- shape=NxCxHxW
-            target {[torch.tensor]} -- shape=NxHxW
-        
-        Returns:
-            torch.tensor -- loss value
+        """Forward pass
+
+        :param input: shape = NxCxHxW
+        :type input: torch.tensor
+        :param target: shape = NxHxW
+        :type target: torch.tensor
+        :return: loss value
+        :rtype: torch.tensor
         """
 
         if input.dim() > 2:

@@ -38,9 +38,21 @@
 </div>
 </div>
 <div class="section" id="module-losses">
-<span id="losses"></span><h1>Losses<a class="headerlink" href="#module-losses" title="Permalink to this headline">¶</a></h1>
-<p>Addition losses module defines classses which are commonly used particularly in segmentation and are not part of standard pytorch library.
-Usage : from nn_common_modules import losses as additional_losses</p>
+<span id="losses"></span><h1>1. Losses<a class="headerlink" href="#module-losses" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Addition losses module defines classses which are commonly used particularly in segmentation and are not part of standard pytorch library.</p>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Import the package and Instantiate any loss class you want to you:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nn_common_modules</span> <span class="k">import</span> <span class="n">losses</span> <span class="k">as</span> <span class="n">additional_losses</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">additional_losses</span><span class="o">.</span><span class="n">DiceLoss</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="members">
+<h2>Members<a class="headerlink" href="#members" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="losses.CombinedLoss">
 <em class="property">class </em><code class="descclassname">losses.</code><code class="descname">CombinedLoss</code><a class="headerlink" href="#losses.CombinedLoss" title="Permalink to this definition">¶</a></dt>
@@ -133,14 +145,25 @@ Usage : from nn_common_modules import losses as additional_losses</p>
 <dl class="method">
 <dt id="losses.FocalLoss.forward">
 <code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#losses.FocalLoss.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>[summary]</p>
-<dl class="docutils">
-<dt>Arguments:</dt>
-<dd>input {torch.tensor} – shape=NxCxHxW
-target {[torch.tensor]} – shape=NxHxW</dd>
-<dt>Returns:</dt>
-<dd>torch.tensor – loss value</dd>
-</dl>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input</strong> (<em>torch.tensor</em>) – shape = NxCxHxW</li>
+<li><strong>target</strong> (<em>torch.tensor</em>) – shape = NxHxW</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">loss value</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -152,35 +175,97 @@ target {[torch.tensor]} – shape=NxHxW</dd>
 <dl class="method">
 <dt id="losses.IoULoss.forward">
 <code class="descname">forward</code><span class="sig-paren">(</span><em>output</em>, <em>target</em>, <em>weights=None</em>, <em>ignore_index=None</em><span class="sig-paren">)</span><a class="headerlink" href="#losses.IoULoss.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Forward pass
-:param output: NxCxHxW Variable
-:param target: NxHxW LongTensor
-:param weights: C FloatTensor
-:param ignore_index: int index to ignore from loss
-:return:</p>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>output</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em>) – shape = NxCxHxW</li>
+<li><strong>target</strong> (<em>torch.tensor</em><em> [</em><em>LongTensor</em><em>]</em>) – shape = NxHxW</li>
+<li><strong>weights</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em><em>, </em><em>optional</em>) – shape = C, defaults to None</li>
+<li><strong>ignore_index</strong> (<em>int</em><em>, </em><em>optional</em>) – index to ignore from loss, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">loss value</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
 
 </div>
+</div>
 <div class="section" id="module-modules">
-<span id="modules"></span><h1>Modules<a class="headerlink" href="#module-modules" title="Permalink to this headline">¶</a></h1>
+<span id="modules"></span><h1>2. Modules<a class="headerlink" href="#module-modules" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>Description<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Building blocks of segmentation neural network</p>
+</div>
+<div class="section" id="id2">
+<h2>Usage<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Import the package and Instantiate any module/block class you want to you:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nn_common_modules</span> <span class="k">import</span> <span class="n">modules</span> <span class="k">as</span> <span class="n">additional_modules</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">additional_modules</span><span class="o">.</span><span class="n">DenseBlock</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">se_block_type</span> <span class="o">=</span> <span class="s1">&#39;SSE&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>Members<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="modules.ClassifierBlock">
 <em class="property">class </em><code class="descclassname">modules.</code><code class="descname">ClassifierBlock</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.ClassifierBlock" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Last layer</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> (<em>dict</em>) – <p>{
+‘num_channels’:1,
+‘num_filters’:64,
+‘kernel_c’:5,
+‘stride_conv’:1,
+‘pool’:2,
+‘stride_pool’:2,
+‘num_classes’:28,
+‘se_block’: se.SELayer.None,
+‘drop_out’:0,2}</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">forward passed tensor</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">torch.tensor [FloatTensor]</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
 <dt id="modules.ClassifierBlock.forward">
 <code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.ClassifierBlock.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em>) – Input tensor, shape = (N x C x H x W)</li>
+<li><strong>weights</strong> (<em>torch.tensor</em><em> (</em><em>N</em><em>)</em><em>, </em><em>optional</em>) – Weights for classifier regression, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">logits</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -188,29 +273,14 @@ registered hooks while the latter silently ignores them.</p>
 <dl class="class">
 <dt id="modules.DecoderBlock">
 <em class="property">class </em><code class="descclassname">modules.</code><code class="descname">DecoderBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.DecoderBlock" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="modules.DecoderBlock.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>out_block=None</em>, <em>indices=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.DecoderBlock.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="modules.DenseBlock">
-<em class="property">class </em><code class="descclassname">modules.</code><code class="descname">DenseBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.DenseBlock" title="Permalink to this definition">¶</a></dt>
-<dd><p>weights used for few-shot learning to tweak spatial SE block
-param ={</p>
-<blockquote>
-<div>‘num_channels’:1,
+<dd><p>Dense decoder block with maxunpool and an optional skip connections and SE block</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>params</strong> (<em>dict</em>) – <p>{
+‘num_channels’:1,
 ‘num_filters’:64,
 ‘kernel_h’:5,
 ‘kernel_w’:5,
@@ -219,20 +289,97 @@ param ={</p>
 ‘stride_pool’:2,
 ‘num_classes’:28,
 ‘se_block’: se.SELayer.None,
-‘drop_out’:0,2</div></blockquote>
-<p>}</p>
+‘drop_out’:0,2}</p>
+</li>
+<li><strong>se_block_type</strong> (<em>str</em><em>, </em><em>valid options are {'NONE'</em><em>, </em><em>'CSE'</em><em>, </em><em>'SSE'</em><em>, </em><em>'CSSE'}</em><em>, </em><em>optional</em>) – Squeeze and Excite block type to be included, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">forward passed tensor</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor [FloatTensor]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="modules.DecoderBlock.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>out_block=None</em>, <em>indices=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.DecoderBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em>) – Input tensor, shape = (N x C x H x W)</li>
+<li><strong>out_block</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em><em>, </em><em>optional</em>) – Tensor for skip connection, shape = (N x C x H x W), defaults to None</li>
+<li><strong>indices</strong> (<em>torch.tensor</em><em>, </em><em>optional</em>) – Indices used for unpooling operation, defaults to None</li>
+<li><strong>weights</strong> (<em>torch.tensor</em><em>, </em><em>optional</em>) – Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Forward passed tensor</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor [FloatTensor]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="modules.DenseBlock">
+<em class="property">class </em><code class="descclassname">modules.</code><code class="descname">DenseBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.DenseBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Block with dense connections</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>params</strong> (<em>dict</em>) – <p>{
+‘num_channels’:1,
+‘num_filters’:64,
+‘kernel_h’:5,
+‘kernel_w’:5,
+‘stride_conv’:1,
+‘pool’:2,
+‘stride_pool’:2,
+‘num_classes’:28,
+‘se_block’: se.SELayer.None,
+‘drop_out’:0,2}</p>
+</li>
+<li><strong>se_block_type</strong> (<em>str</em><em>, </em><em>valid options are {'NONE'</em><em>, </em><em>'CSE'</em><em>, </em><em>'SSE'</em><em>, </em><em>'CSSE'}</em><em>, </em><em>optional</em>) – Squeeze and Excite block type to be included, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">forward passed tensor</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tonsor [FloatTensor]</p>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="modules.DenseBlock.forward">
 <code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.DenseBlock.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em>) – Input tensor, shape = (N x C x H x W)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Forward passed tensor</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">torch.tensor [FloatTensor]</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -240,18 +387,46 @@ registered hooks while the latter silently ignores them.</p>
 <dl class="class">
 <dt id="modules.EncoderBlock">
 <em class="property">class </em><code class="descclassname">modules.</code><code class="descname">EncoderBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.EncoderBlock" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Dense encoder block with maxpool and an optional SE block</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>params</strong> (<em>dict</em>) – <p>{
+‘num_channels’:1,
+‘num_filters’:64,
+‘kernel_h’:5,
+‘kernel_w’:5,
+‘stride_conv’:1,
+‘pool’:2,
+‘stride_pool’:2,
+‘num_classes’:28,
+‘se_block’: se.SELayer.None,
+‘drop_out’:0,2}</p>
+</li>
+<li><strong>se_block_type</strong> (<em>str</em><em>, </em><em>valid options are {'NONE'</em><em>, </em><em>'CSE'</em><em>, </em><em>'SSE'</em><em>, </em><em>'CSSE'}</em><em>, </em><em>optional</em>) – Squeeze and Excite block type to be included, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">output tensor with maxpool, output tensor without maxpool, indices for unpooling</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor [FloatTensor], torch.tensor [FloatTensor], torch.tensor [LongTensor]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
 <dt id="modules.EncoderBlock.forward">
 <code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.EncoderBlock.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
+<dd><p>Forward pass   
+:param input: Input tensor, shape = (N x C x H x W)
+:type input: torch.tensor [FloatTensor]
+:param weights: Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None
+:type weights: torch.tensor, optional
+:return: output tensor with maxpool, output tensor without maxpool, indices for unpooling
+:rtype: torch.tensor [FloatTensor], torch.tensor [FloatTensor], torch.tensor [LongTensor]</p>
 </dd></dl>
 
 </dd></dl>
@@ -259,18 +434,52 @@ registered hooks while the latter silently ignores them.</p>
 <dl class="class">
 <dt id="modules.GenericBlock">
 <em class="property">class </em><code class="descclassname">modules.</code><code class="descname">GenericBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.GenericBlock" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Generic parent class for a conv encoder/decoder block.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>params</strong> (<em>dict</em>) – {‘kernel_h’: 5
+‘kernel_w’: 5
+‘num_channels’:64
+‘num_filters’:64
+‘stride_conv’:1
+}</li>
+<li><strong>se_block_type</strong> (<em>str</em><em>, </em><em>valid options are {'NONE'</em><em>, </em><em>'CSE'</em><em>, </em><em>'SSE'</em><em>, </em><em>'CSSE'}</em><em>, </em><em>optional</em>) – Squeeze and Excite block type to be included, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">forward passed tensor</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor [FloatTensor]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
 <dt id="modules.GenericBlock.forward">
 <code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.GenericBlock.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em>) – Input tensor, shape = (N x C x H x W)</li>
+<li><strong>weights</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em><em>, </em><em>optional</em>) – Custom weights for convolution, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">[description]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[type]</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -278,18 +487,60 @@ registered hooks while the latter silently ignores them.</p>
 <dl class="class">
 <dt id="modules.SDnetDecoderBlock">
 <em class="property">class </em><code class="descclassname">modules.</code><code class="descname">SDnetDecoderBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.SDnetDecoderBlock" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Standard decoder block with maxunpool -&gt; skipconnections -&gt; conv -&gt; prelu -&gt; batchnorm, without dense connections and an optional SE blocks</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>params</strong> (<em>dict</em>) – <p>{
+‘num_channels’:1,
+‘num_filters’:64,
+‘kernel_h’:5,
+‘kernel_w’:5,
+‘stride_conv’:1,
+‘pool’:2,
+‘stride_pool’:2,
+‘num_classes’:28,
+‘se_block’: se.SELayer.None,
+‘drop_out’:0,2}</p>
+</li>
+<li><strong>se_block_type</strong> (<em>str</em><em>, </em><em>valid options are {'NONE'</em><em>, </em><em>'CSE'</em><em>, </em><em>'SSE'</em><em>, </em><em>'CSSE'}</em><em>, </em><em>optional</em>) – Squeeze and Excite block type to be included, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">forward passed tensor</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor [FloatTensor]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
 <dt id="modules.SDnetDecoderBlock.forward">
 <code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>out_block=None</em>, <em>indices=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.SDnetDecoderBlock.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
-</div>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em>) – Input tensor, shape = (N x C x H x W)</li>
+<li><strong>out_block</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em><em>, </em><em>optional</em>) – Tensor for skip connection, shape = (N x C x H x W), defaults to None</li>
+<li><strong>indices</strong> (<em>torch.tensor</em><em>, </em><em>optional</em>) – Indices used for unpooling operation, defaults to None</li>
+<li><strong>weights</strong> (<em>torch.tensor</em><em>, </em><em>optional</em>) – Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Forward pass</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -297,22 +548,63 @@ registered hooks while the latter silently ignores them.</p>
 <dl class="class">
 <dt id="modules.SDnetEncoderBlock">
 <em class="property">class </em><code class="descclassname">modules.</code><code class="descname">SDnetEncoderBlock</code><span class="sig-paren">(</span><em>params</em>, <em>se_block_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.SDnetEncoderBlock" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>A standard conv -&gt; prelu -&gt; batchnorm-&gt; maxpool block without dense connections</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>params</strong> (<em>dict</em>) – <p>{
+‘num_channels’:1,
+‘num_filters’:64,
+‘kernel_h’:5,
+‘kernel_w’:5,
+‘stride_conv’:1,
+‘pool’:2,
+‘stride_pool’:2,
+‘num_classes’:28,
+‘se_block’: se.SELayer.None,
+‘drop_out’:0,2}</p>
+</li>
+<li><strong>se_block_type</strong> (<em>str</em><em>, </em><em>valid options are {'NONE'</em><em>, </em><em>'CSE'</em><em>, </em><em>'SSE'</em><em>, </em><em>'CSSE'}</em><em>, </em><em>optional</em>) – Squeeze and Excite block type to be included, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">output tensor with maxpool, output tensor without maxpool, indices for unpooling</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor [FloatTensor], torch.tensor [FloatTensor], torch.tensor [LongTensor]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
 <dt id="modules.SDnetEncoderBlock.forward">
 <code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#modules.SDnetEncoderBlock.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Although the recipe for forward pass needs to be defined within
-this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
+<dd><p>Forward pass</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input</strong> (<em>torch.tensor</em><em> [</em><em>FloatTensor</em><em>]</em>) – Input tensor, shape = (N x C x H x W)</li>
+<li><strong>weights</strong> (<em>torch.tensor</em><em>, </em><em>optional</em>) – Weights used for squeeze and excitation, shape depends on the type of SE block, defaults to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">output tensor with maxpool, output tensor without maxpool, indices for unpooling</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">torch.tensor [FloatTensor], torch.tensor [FloatTensor], torch.tensor [LongTensor]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 
 

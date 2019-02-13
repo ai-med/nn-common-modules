@@ -6,12 +6,13 @@ nn-common-modules's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-Losses
-======
+1. Losses
+==========
 .. automodule:: losses
    :members:
 
-Modules
-=======
+
+2. Modules
+===========
 .. automodule:: modules
    :members:   
