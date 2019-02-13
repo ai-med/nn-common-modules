@@ -3,3 +3,4 @@ nn_common_modules.egg-info/
 *__pycache__*
 /.idea
 .vscode
+**.DS_Store
