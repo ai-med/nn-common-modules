@@ -8,7 +8,7 @@ Usage
 Import the package and Instantiate any module/block class you want to you::
 
     from nn_common_modules import modules as additional_modules
-    loss = additional_modules.DenseBlock(params, se_block_type = 'SSE')
+    dense_block = additional_modules.DenseBlock(params, se_block_type = 'SSE')
 
 Members
 ++++++++++++++++++++++
