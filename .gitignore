@@ -4,3 +4,4 @@ nn_common_modules.egg-info/
 /.idea
 .vscode
 **.DS_Store
+venv/

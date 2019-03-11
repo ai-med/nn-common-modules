@@ -10,6 +10,8 @@ Import the package and Instantiate any loss class you want to you::
     from nn_common_modules import losses as additional_losses
     loss = additional_losses.DiceLoss()
 
+    Note: If you use DiceLoss, insert Softmax layer in the architecture. In case of combined loss, do not put softmax as it is in-built
+
 Members
 ++++++++++++++++++++++
 """
@@ -141,7 +143,7 @@ class IoULoss(_WeightedLoss):
 
         intersection = output * encoded_target
         numerator = intersection.sum(0).sum(1).sum(1)
-        denominator = (output + encoded_target) - (output*encoded_target)
+        denominator = (output + encoded_target) - (output * encoded_target)
 
         if ignore_index is not None:
             denominator[mask] = 0
@@ -192,14 +194,40 @@ class CombinedLoss(_Loss):
         :param weight: torch.tensor (NxHxW)
         :return: scalar
         """
-        input_soft = F.softmax(input, dim=1)
-        y_2 = torch.mean(self.dice_loss(input_soft, target))
+        # input_soft = F.softmax(input, dim=1)
+        y_2 = torch.mean(self.dice_loss(input, target))
         if weight is None:
             y_1 = torch.mean(self.cross_entropy_loss.forward(input, target))
         else:
             y_1 = torch.mean(
-                torch.mul(self.cross_entropy_loss.forward(input, target), weight.cuda()))
+                torch.mul(self.cross_entropy_loss.forward(input, target), weight))
         return y_1 + y_2
+
+
+class CombinedLoss_KLdiv(_Loss):
+    """
+    A combination of dice  and cross entropy loss
+    """
+
+    def __init__(self):
+        super(CombinedLoss_KLdiv, self).__init__()
+        self.cross_entropy_loss = CrossEntropyLoss2d()
+        self.dice_loss = DiceLoss()
+
+    def forward(self, input, target, weight=None):
+        """
+        Forward pass
+
+        """
+        input, kl_div_loss = input
+        # input_soft = F.softmax(input, dim=1)
+        y_2 = torch.mean(self.dice_loss(input, target))
+        if weight is None:
+            y_1 = torch.mean(self.cross_entropy_loss.forward(input, target))
+        else:
+            y_1 = torch.mean(
+                torch.mul(self.cross_entropy_loss.forward(input, target), weight))
+        return y_1, y_2, kl_div_loss
 
 
 # Credit to https://github.com/clcarwin/focal_loss_pytorch
@@ -214,7 +242,7 @@ class FocalLoss(nn.Module):
         self.gamma = gamma
         self.alpha = alpha
         if isinstance(alpha, (float, int)):
-            self.alpha = torch.Tensor([alpha, 1-alpha])
+            self.alpha = torch.Tensor([alpha, 1 - alpha])
         if isinstance(alpha, list):
             self.alpha = torch.Tensor(alpha)
         self.size_average = size_average
@@ -233,8 +261,8 @@ class FocalLoss(nn.Module):
         if input.dim() > 2:
             # N,C,H,W => N,C,H*W
             input = input.view(input.size(0), input.size(1), -1)
-            input = input.transpose(1, 2)    # N,C,H*W => N,H*W,C
-            input = input.contiguous().view(-1, input.size(2))   # N,H*W,C => N*H*W,C
+            input = input.transpose(1, 2)  # N,C,H*W => N,H*W,C
+            input = input.contiguous().view(-1, input.size(2))  # N,H*W,C => N*H*W,C
         target = target.view(-1, 1)
 
         logpt = F.log_softmax(input, dim=1)
@@ -248,7 +276,7 @@ class FocalLoss(nn.Module):
             at = self.alpha.gather(0, target.data.view(-1))
             logpt = logpt * Variable(at)
 
-        loss = -1 * (1-pt)**self.gamma * logpt
+        loss = -1 * (1 - pt) ** self.gamma * logpt
         if self.size_average:
             return loss.mean()
         else:

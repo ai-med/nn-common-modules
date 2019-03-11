@@ -196,9 +196,16 @@ class DecoderBlock(DenseBlock):
         :return: Forward passed tensor
         :rtype: torch.tensor [FloatTensor]
         """
+        if indices is not None:
+            unpool = self.unpool(input, indices)
+        else:
+            # TODO: Implement Conv Transpose
+            print("You have to use Conv Transpose")
 
-        unpool = self.unpool(input, indices)
-        concat = torch.cat((out_block, unpool), dim=1)
+        if out_block is not None:
+            concat = torch.cat((out_block, unpool), dim=1)
+        else:
+            concat = unpool
         out_block = super(DecoderBlock, self).forward(concat)
 
         if self.SELayer:
@@ -423,3 +430,61 @@ class SDnetDecoderBlock(GenericBlock):
         if self.drop_out_needed:
             out_block = self.drop_out(out_block)
         return out_block
+
+
+class SDNetNoBNEncoderBlock(nn.Module):
+    """
+     Encoder Block for Bayesian Network
+    """
+
+    def __init__(self, params):
+        super(SDNetNoBNEncoderBlock, self).__init__()
+        padding_h = int((params['kernel_h'] - 1) / 2)
+        padding_w = int((params['kernel_w'] - 1) / 2)
+        self.out_channel = params['num_filters']
+        self.conv = nn.Conv2d(in_channels=params['num_channels'], out_channels=params['num_filters'],
+                              kernel_size=(
+                                  params['kernel_h'], params['kernel_w']),
+                              padding=(padding_h, padding_w),
+                              stride=params['stride_conv'])
+        self.relu = nn.ReLU()
+        self.maxpool = nn.MaxPool2d(
+            kernel_size=params['pool'], stride=params['stride_pool'], return_indices=True)
+
+    def forward(self, input):
+        x1 = self.conv(input)
+        x2 = self.relu(x1)
+        out_encoder, indices = self.maxpool(x2)
+        return out_encoder, x2, indices
+
+
+class SDNetNoBNDecoderBlock(nn.Module):
+    """
+     Decoder Block for Bayesian Network
+    """
+
+    def __init__(self, params):
+        super(SDNetNoBNDecoderBlock, self).__init__()
+        padding_h = int((params['kernel_h'] - 1) / 2)
+        padding_w = int((params['kernel_w'] - 1) / 2)
+        self.out_channel = params['num_filters']
+
+        self.conv = nn.Conv2d(in_channels=params['num_channels'], out_channels=params['num_filters'],
+                              kernel_size=(
+                                  params['kernel_h'], params['kernel_w']),
+                              padding=(padding_h, padding_w),
+                              stride=params['stride_conv'])
+        self.relu = nn.ReLU()
+
+        self.unpool = nn.MaxUnpool2d(
+            kernel_size=params['pool'], stride=params['stride_pool'])
+
+    def forward(self, input, out_block=None, indices=None):
+        unpool = self.unpool(input, indices)
+        if out_block is not None:
+            concat = torch.cat((out_block, unpool), dim=1)
+        else:
+            concat = unpool
+        x1 = self.conv(concat)
+        x2 = self.relu(x1)
+        return x2
