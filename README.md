@@ -2,7 +2,7 @@
 
 Common modules, blocks and losses which can be reused in a deep neural netwok specifically for segmentation Please use [technical documentation](https://shayansiddiqui.github.io/nn-common-modules/build/html/) for a reference to API manual
 
-This project has 2 modules 
+This project has 3 modules 
 * Losses (losses.py) -> It has all the loss functions defined as python classes
     1. DiceLoss
     2. IoULoss
@@ -16,7 +16,12 @@ This project has 2 modules
     4. ClassifierBlock
     5. GenericBlock
     6. SDNetEncoderBlock
-    7. SDNetDecoderBlock
+    7. SDNetDecoderBlock    
+* Bayesian Modules (bayesian_modules.py) -> It has all the commonly used building blocks of a Bayesian FCN
+    1. BayesianConvolutionBlock
+    2. BayesianEncoderBlock
+    3. BayesianDecoderBlock
+    4. BayesianClassifierBlock
 
 ## Getting Started
 
