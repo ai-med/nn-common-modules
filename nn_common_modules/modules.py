@@ -197,7 +197,7 @@ class DecoderBlock(DenseBlock):
         :rtype: torch.tensor [FloatTensor]
         """
         if indices is not None:
-            unpool = self.unpool(input, indices)
+            unpool = self.unpool(input, indices, out_block.shape)
         else:
             # TODO: Implement Conv Transpose
             print("You have to use Conv Transpose")
@@ -418,7 +418,7 @@ class SDnetDecoderBlock(GenericBlock):
         :rtype: torch.tensor
         """
 
-        unpool = self.unpool(input, indices)
+        unpool = self.unpool(input, indices, out_block.shape)
         if out_block is not None:
             concat = torch.cat((out_block, unpool), dim=1)
         else:
@@ -480,7 +480,7 @@ class SDNetNoBNDecoderBlock(nn.Module):
             kernel_size=params['pool'], stride=params['stride_pool'])
 
     def forward(self, input, out_block=None, indices=None):
-        unpool = self.unpool(input, indices)
+        unpool = self.unpool(input, indices, out_block.shape)
         if out_block is not None:
             concat = torch.cat((out_block, unpool), dim=1)
         else:
