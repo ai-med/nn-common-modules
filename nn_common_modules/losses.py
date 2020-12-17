@@ -28,21 +28,20 @@ class DiceLoss(_WeightedLoss):
     Dice Loss for a batch of samples
     """
 
-    def forward(self, output, target, weights=None, ignore_index=None, binary=False):
+    def forward(self, output, target, weights=None, binary=False):
         """
         Forward pass
 
         :param output: NxCxHxW logits
         :param target: NxHxW LongTensor
         :param weights: C FloatTensor
-        :param ignore_index: int index to ignore from loss
         :param binary: bool for binarized one chaneel(C=1) input
         :return: torch.tensor
         """
         output = F.softmax(output, dim=1)
         if binary:
             return self._dice_loss_binary(output, target)
-        return self._dice_loss_multichannel(output, target, weights, ignore_index)
+        return self._dice_loss_multichannel(output, target, weights)
 
     @staticmethod
     def _dice_loss_binary(output, target):
@@ -64,43 +63,37 @@ class DiceLoss(_WeightedLoss):
         return loss_per_channel.sum() / output.size(1)
 
     @staticmethod
-    def _dice_loss_multichannel(output, target, weights=None, ignore_index=None):
+    def _dice_loss_multichannel(output, target, weights=None):
         """
         Forward pass
 
         :param output: NxCxHxW Variable
         :param target: NxHxW LongTensor
         :param weights: C FloatTensor
-        :param ignore_index: int index to ignore from loss
         :param binary: bool for binarized one chaneel(C=1) input
         :return:
         """
+
+        output = F.softmax(output, dim=1)
         eps = 0.0001
-        encoded_target = output.detach() * 0
+        target = target.unsqueeze(1)
+        encoded_target = torch.zeros_like(output)
 
-        if ignore_index is not None:
-            mask = target == ignore_index
-            target = target.clone()
-            target[mask] = 0
-            encoded_target.scatter_(1, target.unsqueeze(1), 1)
-            mask = mask.unsqueeze(1).expand_as(encoded_target)
-            encoded_target[mask] = 0
-        else:
-            encoded_target.scatter_(1, target.unsqueeze(1), 1)
-
-        if weights is None:
-            weights = 1
+        encoded_target = encoded_target.scatter(1, target, 1)
 
         intersection = output * encoded_target
-        numerator = 2 * intersection.sum(0).sum(1).sum(1)
-        denominator = output + encoded_target
+        intersection = intersection.sum(2).sum(2)
 
-        if ignore_index is not None:
-            denominator[mask] = 0
-        denominator = denominator.sum(0).sum(1).sum(1) + eps
-        loss_per_channel = weights * (1 - (numerator / denominator))
+        num_union_pixels = output + encoded_target
+        num_union_pixels = num_union_pixels.sum(2).sum(2)
 
-        return loss_per_channel.sum() / output.size(1)
+        loss_per_class = 1 - ((2 * intersection) / (num_union_pixels + eps))
+        # loss_per_class = 1 - ((2 * intersection + 1) / (num_union_pixels + 1))
+        if weights is None:
+            weights = torch.ones_like(loss_per_class)
+        loss_per_class *= weights
+
+        return (loss_per_class.sum(1) / (num_union_pixels != 0).sum(1).float()).mean()
 
 
 class IoULoss(_WeightedLoss):
@@ -180,7 +173,7 @@ class CombinedLoss(_Loss):
 
     def __init__(self):
         super(CombinedLoss, self).__init__()
-        self.cross_entropy_loss = CrossEntropyLoss2d()
+        self.cross_entropy_loss = nn.CrossEntropyLoss(reduction='none')  # CrossEntropyLoss2d()
         self.dice_loss = DiceLoss()
         self.focal_loss = FocalLoss()
         self.l2_loss = nn.MSELoss()

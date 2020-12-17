@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(name="nn-common-modules",
-                 version="1.1",
+                 version="1.3",
                  url="https://github.com/abhi4ssj/nn-common-modules",
                  author="Shayan Ahmad Siddiqui, Abhijit Guha Roy",
                  author_email="shayan.siddiqui89@gmail.com",

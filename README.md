@@ -37,7 +37,7 @@ You need to have following in order for this library to work as expected
 Always use the latest release. Use following command with appropriate version no(v1.0) in this particular case to install. You can find the link for the latest release in the release section of this github repo
 
 ```
-pip install https://github.com/ai-med/nn-common-modules/releases/download/v1.0/nn_common_modules-1.0-py2.py3-none-any.whl
+pip install https://github.com/ai-med/nn-common-modules/releases/download/v1.1/nn_common_modules-1.3-py3-none-any.whl
 ```
 
 ## Authors
