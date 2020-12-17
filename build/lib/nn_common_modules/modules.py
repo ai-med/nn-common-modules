@@ -53,7 +53,8 @@ class DenseBlock(nn.Module):
             self.SELayer = se.ChannelSpatialSELayer(params['num_filters'])
         else:
             self.SELayer = None
-
+        print(se.SELayer.CSE.value, se_block_type)
+        
         padding_h = int((params['kernel_h'] - 1) / 2)
         padding_w = int((params['kernel_w'] - 1) / 2)
 
